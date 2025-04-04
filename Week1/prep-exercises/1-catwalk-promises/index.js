@@ -13,10 +13,8 @@ function walk(img, stopPos) {
   return new Promise((resolve) => {
     const interval = setInterval(() => {
       img.style.left = `${CURRENT_POS += STEP_SIZE_PX}px`;
-      console.log(CURRENT_POS);
 
       if (CURRENT_POS >= stopPos) {
-        console.log('done')
         clearInterval(interval);
         resolve();
       }
@@ -44,7 +42,7 @@ function catWalk() {
   async function movement() {
     while (true) {
       try {
-        await walk(img, startPos, centerPos).then(() => dance(img)).then(() => walk(img, stopPos)).then(() => CURRENT_POS = 0);
+        await walk(img, centerPos).then(() => dance(img)).then(() => walk(img, stopPos)).then(() => CURRENT_POS = 0);
       }
       catch (err) {
         console.error(err);
