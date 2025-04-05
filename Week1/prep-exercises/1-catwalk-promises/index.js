@@ -39,19 +39,14 @@ function catWalk() {
   const centerPos = Math.floor(((window.innerWidth - img.width) / 2) / 10) * 10;
   const stopPos = window.innerWidth + startPos;
 
-  async function movement() {
-    while (true) {
-      try {
-        await walk(img, centerPos).then(() => dance(img)).then(() => walk(img, stopPos)).then(() => CURRENT_POS = 0);
-      }
-      catch (err) {
-        console.error(err);
-      }
-    }
+  const loop = () => {
+    walk(img, centerPos)
+        .then(() => dance(img))
+        .then(() => walk(img, stopPos))
+        .then(() => CURRENT_POS = 0)
+        .then(() => loop());
   }
-  async function loop() {
-    await movement();
-  }
+
   loop();
 }
 
