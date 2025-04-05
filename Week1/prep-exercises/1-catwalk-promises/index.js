@@ -43,8 +43,10 @@ function catWalk() {
     walk(img, centerPos)
         .then(() => dance(img))
         .then(() => walk(img, stopPos))
-        .then(() => CURRENT_POS = 0)
-        .then(() => loop());
+        .then(() => {
+          CURRENT_POS = 0;
+          loop();
+        })
   }
 
   loop();
