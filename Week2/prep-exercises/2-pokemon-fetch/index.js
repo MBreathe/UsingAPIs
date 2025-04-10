@@ -16,7 +16,15 @@ const VALID_URL = 'https://pokeapi.co/api/v2/pokemon/?limit=5';
 const INVALID_URL = 'https://pokeapi.co/api/v2/pokemons/?limit=5';
 
 async function fetchJSON(url) {
-  // TODO
+  const response = await fetch(url);
+  const json = await response.json();
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+  return new Promise((resolve, reject) => {
+    resolve(json);
+    reject(err => err.message);
+  })
 
   // Fetch the JSON data from the web API that responds to the `url` parameter
   // and return a promise that resolves to a corresponding JavaScript object.
@@ -52,7 +60,7 @@ function main() {
     const option = document.querySelector('#option');
     const url = option.checked ? INVALID_URL : VALID_URL;
 
-    // TODO
+    fetchJSON(url).then(response => renderResults(response)).catch(error => renderError(error));
     // Use `fetchJSON()` to fetch data from the selected url.
     // If successful, render the data by calling function `renderResults()`.
     // On failure, render the error by calling function `renderError()`.
