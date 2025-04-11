@@ -21,10 +21,7 @@ async function fetchJSON(url) {
   if (!response.ok) {
     throw new Error(response.statusText);
   }
-  return new Promise((resolve, reject) => {
-    resolve(json);
-    reject(err => err.message);
-  })
+  return json;
 
   // Fetch the JSON data from the web API that responds to the `url` parameter
   // and return a promise that resolves to a corresponding JavaScript object.
