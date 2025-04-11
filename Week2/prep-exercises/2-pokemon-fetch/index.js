@@ -16,12 +16,18 @@ const VALID_URL = 'https://pokeapi.co/api/v2/pokemon/?limit=5';
 const INVALID_URL = 'https://pokeapi.co/api/v2/pokemons/?limit=5';
 
 async function fetchJSON(url) {
-  const response = await fetch(url);
-  const json = await response.json();
-  if (!response.ok) {
-    throw new Error(response.statusText);
+  try {
+    const response = await fetch(url);
+    const json = await response.json();
+    if (!response.ok) {
+      console.log('HTTP response status:', response.statusText);
+      return;
+    }
+    return json;
+  } catch (err) {
+    console.error(err);
   }
-  return json;
+
 
   // Fetch the JSON data from the web API that responds to the `url` parameter
   // and return a promise that resolves to a corresponding JavaScript object.
