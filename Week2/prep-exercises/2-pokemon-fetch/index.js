@@ -20,7 +20,7 @@ async function fetchJSON(url) {
     const response = await fetch(url);
     const json = await response.json();
     if (!response.ok) {
-      console.log('HTTP response status:', response.statusText);
+      console.log('HTTP response status:', response.status);
       return;
     }
     return json;
