@@ -15,7 +15,7 @@ const main = async () => {
 
     await navigator.geolocation.getCurrentPosition((position) => {
         const { latitude, longitude } = position.coords;
-        const locationUrl = `http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=${API_KEY}&q=${latitude}%2C%20${longitude}&language=en-US&details=true&toplevel=true`;
+        const locationUrl = `https://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=${API_KEY}&q=${latitude}%2C%20${longitude}&language=en-US&details=true&toplevel=true`;
 
         const fetchLocationData = async () => {
             try {
@@ -32,7 +32,7 @@ const main = async () => {
 
         const fetchForecastData = async (key) => {
             try {
-                const forecastUrl = `http://dataservice.accuweather.com/currentconditions/v1/${key}?apikey=${API_KEY}`;
+                const forecastUrl = `https://dataservice.accuweather.com/currentconditions/v1/${key}?apikey=${API_KEY}`;
                 const response = await fetch(forecastUrl);
                 if (!response.ok) {
                     console.log(response.status);
