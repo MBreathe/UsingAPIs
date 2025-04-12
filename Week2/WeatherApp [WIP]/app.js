@@ -1,49 +1,92 @@
-const API_KEY = '17uAlRDLAElbebijBjVjQ4sCt8FUO1y7';
-const LOCATION_TIMEZONE_EL = document.querySelector('.location-timezone');
-const ICON_EL = document.querySelector('.icon');
-const TEMPERATURE_DEG_EL = document.querySelector('.temperature-degree');
-const TEMPERATURE_SCALE_EL = document.querySelector('.temperature-scale');
-const TEMPERATURE_DESCRIPTION_EL = document.querySelector('.temperature-description');
-const TEMPERATURE_SECTION_EL = document.querySelector('.degree-section');
+import {renderPage} from "./renderingPage.js";
 
+async function fetchData(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw Error(response.status);
+        }
+        return response.json();
+    } catch (error) {
+        console.log('Fetching error:', error);
+        throw error;
+    }
+}
 
-const main = async () => {
-    if (!navigator.geolocation) {
-        console.log('Geolocation is not supported.');
-        return;
+function getGeolocation() {
+    return new Promise(resolve => {
+        if (!navigator.geolocation) {
+            console.log('Geolocation is not supported');
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(position => resolve(position.coords));
+    })
+}
+
+async function retrieveCityData(apiKey) {
+    try {
+        const location = await getGeolocation();
+        const locationUrl = `https://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=${apiKey}&q=${location.latitude}%2C%20${location.longitude}&language=en-US&details=true&toplevel=true`;
+        return  await fetchData(locationUrl);
+    } catch (error) {
+        console.log('Error while retrieving city data:', error);
+        throw error;
+    }
+}
+
+async function retrieveWeatherData(apiKey, cityKey) {
+    try {
+        const forecastUrl = `https://dataservice.accuweather.com/currentconditions/v1/${cityKey}?apikey=${apiKey}`;
+        return await fetchData(forecastUrl);
+    } catch (error) {
+        console.log('Error while retrieving weather data:', error);
+        throw error;
+    }
+}
+
+function populatePage(cityData, weatherData) {
+    const cityEl = document.querySelector('#city-name');
+    const iconEl = document.querySelector('#icon');
+    const degreeSection = document.querySelector('.degree-section');
+    const temperatureEl = document.querySelector('#temperature');
+    const temperatureScaleEl = document.querySelector('#temperature-scale');
+    const weatherStatusEl = document.querySelector('#weather-status');
+    let scale = 'Metric';
+
+    cityEl.innerHTML = cityData.EnglishName;
+    //iconEl.innerHTML = icon;
+    temperatureEl.innerHTML = weatherData[0].Temperature[scale].Value;
+    temperatureScaleEl.innerHTML = temperatureScale;
+    weatherStatusEl.innerHTML = weatherData[0].WeatherText;
+
+    degreeSection.addEventListener('click', () => {
+        if (temperatureScale === 'Metric') {
+            temperatureScale = 'Imperial';
+            temperatureScaleEl.innerHTML = temperatureScale;
+        }
+        else {
+            temperatureScale = 'C';
+            temperatureScaleEl.innerHTML = temperatureScale;
+        }
+    })
+}
+
+export async function main() {
+    try {
+        const apiKey = '17uAlRDLAElbebijBjVjQ4sCt8FUO1y7';
+        const cityData = await retrieveCityData(apiKey);
+        const cityKey = cityData.Key;
+        const weatherData = await retrieveWeatherData(apiKey, cityKey);
+
+        populatePage(cityData, weatherData);
+    } catch (error) {
+        console.log('Error occurred inside main function:',error);
     }
 
-    await navigator.geolocation.getCurrentPosition((position) => {
-        const { latitude, longitude } = position.coords;
-        const locationUrl = `https://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=${API_KEY}&q=${latitude}%2C%20${longitude}&language=en-US&details=true&toplevel=true`;
+}
 
-        const fetchLocationData = async () => {
-            try {
-                const response = await fetch(locationUrl);
-                if (!response.ok) {
-                    console.log(response.status);
-                }
-                const json = await response.json();
-                return json;
-            } catch (err) {
-                console.log(err);
-            }
-        }
-
-        const fetchForecastData = async (key) => {
-            try {
-                const forecastUrl = `https://dataservice.accuweather.com/currentconditions/v1/${key}?apikey=${API_KEY}`;
-                const response = await fetch(forecastUrl);
-                if (!response.ok) {
-                    console.log(response.status);
-                }
-                const json = await response.json();
-                return json;
-            } catch (err) {
-                console.log(err);
-            }
-        }
-
+/*
+const main = async () => {
         fetchLocationData()
             .then(locationData => {
                 LOCATION_TIMEZONE_EL.innerHTML = locationData.EnglishName;
@@ -74,5 +117,6 @@ const main = async () => {
     });
 
 }
+*/
 
-window.addEventListener('load', main);
+window.addEventListener('load', renderPage);
